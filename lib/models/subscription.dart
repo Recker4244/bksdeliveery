@@ -11,10 +11,30 @@ abstract class subscription {
   int skipCount();
   int unpaidSkips();
   String createdAt();
+  String username();
+  int userphone();
+  String landmark();
+  int pincode();
 }
 
 class Custom implements subscription {
   final custom.customSub plan;
+  pincode() {
+    return plan.user.addresses[0].pin;
+  }
+
+  landmark() {
+    return plan.user.addresses[0].landMark;
+  }
+
+  userphone() {
+    return plan.user.mobile;
+  }
+
+  username() {
+    return plan.user.fname;
+  }
+
   createdAt() {
     return plan.createdAt;
   }
@@ -56,6 +76,22 @@ class Custom implements subscription {
 
 class Standard implements subscription {
   final standard.standardSub plan;
+  pincode() {
+    return plan.user.addresses[0].pin;
+  }
+
+  landmark() {
+    return plan.user.addresses[0].landMark;
+  }
+
+  userphone() {
+    return plan.user.mobile;
+  }
+
+  username() {
+    return plan.user.fname;
+  }
+
   createdAt() {
     return plan.createdAt;
   }

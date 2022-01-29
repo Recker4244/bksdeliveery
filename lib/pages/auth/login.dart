@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:gold247/constant/constant.dart';
+import 'package:gold247/models/user.dart';
 
 import 'package:gold247/pages/portfolio/Collections.dart';
-import 'package:gold247/pages/profile/Orders.dart';
 
 import 'package:gold247/pages/screens.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,6 +17,7 @@ import 'dart:convert';
 import 'package:sizer/sizer.dart';
 import 'package:gold247/language/languageCubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 enum ButtonSate { init, loading, done }
 
@@ -63,6 +64,8 @@ class _LoginState extends State<Login> {
   bool value = true;
   bool whatsapp = true;
   bool isloading = false;
+  TextEditingController email = TextEditingController();
+  TextEditingController pass = TextEditingController();
   @override
   Widget build(BuildContext context) {
     final isDone = state == ButtonSate.done;
@@ -193,10 +196,10 @@ class _LoginState extends State<Login> {
                 fit: BoxFit.cover,
               ),
               SizedBox(height: 5.h),
-              Text(
-                locale.signin,
-                style: grey14BoldTextStyle,
-              ),
+              // Text(
+              //   locale.signin,
+              //   style: grey14BoldTextStyle,
+              // ),
               Padding(
                 padding: const EdgeInsets.all(fixPadding * 2),
                 child: Theme(
@@ -208,6 +211,7 @@ class _LoginState extends State<Login> {
                     ),
                   ),
                   child: TextFormField(
+                    controller: email,
                     cursorColor: primaryColor,
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     keyboardType: TextInputType.emailAddress,
@@ -250,6 +254,7 @@ class _LoginState extends State<Login> {
                     ),
                   ),
                   child: TextFormField(
+                    controller: pass,
                     obscureText: true,
                     cursorColor: primaryColor,
                     autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -298,7 +303,7 @@ class _LoginState extends State<Login> {
                       foregroundColor: getColor(whiteColor, primaryColor),
                       backgroundColor: getColor(primaryColor, whiteColor)),
                   onPressed: () async {
-                    login();
+                    login(email.text, pass.text);
                     // HapticFeedback.vibrate();
 
                     // if (isCorrect) {
@@ -436,22 +441,59 @@ class _LoginState extends State<Login> {
         ));
   }
 
-  void login() async {
+  void login(String email, String password) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return Dialog(
+          elevation: 0.0,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          child: Wrap(
+            children: [
+              Container(
+                padding: EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    SpinKitRing(
+                      color: primaryColor,
+                      size: 40.0,
+                      lineWidth: 1.2,
+                    ),
+                    SizedBox(height: 25.0),
+                    Text(
+                      'Please Wait..',
+                      style: grey14MediumTextStyle,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
     var headers = {'Content-Type': 'application/json'};
     var request = http.Request('POST',
         Uri.parse('https://goldv2.herokuapp.com/api/system-user/auth/login'));
-    request.body =
-        json.encode({"email": "surya@email.com", "password": "Surya"});
+    request.body = json.encode({"email": email, "password": password});
     request.headers.addAll(headers);
 
     http.StreamedResponse response = await request.send();
 
     if (response.statusCode == 200) {
       final responseString = jsonDecode(await response.stream.bytesToString());
+      Userdata = userdata.fromJson(responseString);
+      Navigator.of(context).pop();
       Navigator.pushReplacement(
           context,
           PageTransition(
-              type: PageTransitionType.rightToLeft, child: Orders()));
+              type: PageTransitionType.rightToLeft, child: Collections()));
     } else {
       print(response.reasonPhrase);
     }

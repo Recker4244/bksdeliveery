@@ -327,39 +327,39 @@
 //                 // Name Field End
 
 //                 // Email Field Start
-//                 Container(
-//                   padding: EdgeInsets.only(top: fixPadding, bottom: fixPadding),
-//                   child: Theme(
-//                     data: ThemeData(
-//                       primaryColor: whiteColor,
-//                       textSelectionTheme: TextSelectionThemeData(
-//                         cursorColor: primaryColor,
-//                       ),
-//                     ),
-//                     child: TextField(
-//                       focusNode: emailControl,
-//                       controller: emailController,
-//                       keyboardType: TextInputType.emailAddress,
-//                       style: primaryColor16BoldTextStyle,
-//                       decoration: InputDecoration(
-//                         enabledBorder: OutlineInputBorder(
-//                           borderRadius: const BorderRadius.all(
-//                             const Radius.circular(10.0),
-//                           ),
-//                           borderSide: BorderSide(color: primaryColor, width: 1),
-//                         ),
-//                         labelText: 'Email',
-//                         labelStyle: primaryColor16BoldTextStyle,
-//                         focusedBorder: OutlineInputBorder(
-//                           borderRadius: const BorderRadius.all(
-//                             const Radius.circular(10.0),
-//                           ),
-//                           borderSide: BorderSide(color: primaryColor, width: 1),
-//                         ),
-//                       ),
-//                     ),
-//                   ),
-//                 ),
+                // Container(
+                //   padding: EdgeInsets.only(top: fixPadding, bottom: fixPadding),
+                //   child: Theme(
+                //     data: ThemeData(
+                //       primaryColor: whiteColor,
+                //       textSelectionTheme: TextSelectionThemeData(
+                //         cursorColor: primaryColor,
+                //       ),
+                //     ),
+                //     child: TextField(
+                //       focusNode: emailControl,
+                //       controller: emailController,
+                //       keyboardType: TextInputType.emailAddress,
+                //       style: primaryColor16BoldTextStyle,
+                //       decoration: InputDecoration(
+                //         enabledBorder: OutlineInputBorder(
+                //           borderRadius: const BorderRadius.all(
+                //             const Radius.circular(10.0),
+                //           ),
+                //           borderSide: BorderSide(color: primaryColor, width: 1),
+                //         ),
+                //         labelText: 'Email',
+                //         labelStyle: primaryColor16BoldTextStyle,
+                //         focusedBorder: OutlineInputBorder(
+                //           borderRadius: const BorderRadius.all(
+                //             const Radius.circular(10.0),
+                //           ),
+                //           borderSide: BorderSide(color: primaryColor, width: 1),
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                // ),
 //                 // Email Field End
 
 //                 heightSpace,

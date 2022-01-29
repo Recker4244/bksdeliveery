@@ -30,7 +30,90 @@
 //     prefs.clear();
 //   }
 
- 
+//   logoutDialog() {
+//     logout();
+//     showDialog(
+//       context: context,
+//       barrierDismissible: false,
+//       builder: (BuildContext context) {
+//         // return object of type Dialog
+//         double width = MediaQuery.of(context).size.width;
+//         return Dialog(
+//           elevation: 0.0,
+//           shape:
+//               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+//           child: Wrap(
+//             children: [
+//               Container(
+//                 width: double.infinity,
+//                 padding: EdgeInsets.all(fixPadding * 2.0),
+//                 child: Column(
+//                   mainAxisAlignment: MainAxisAlignment.center,
+//                   crossAxisAlignment: CrossAxisAlignment.center,
+//                   children: <Widget>[
+//                     Text(
+//                       'You sure want to logout?',
+//                       style: black16BoldTextStyle,
+//                       textAlign: TextAlign.center,
+//                     ),
+//                     heightSpace,
+//                     heightSpace,
+//                     Row(
+//                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                       crossAxisAlignment: CrossAxisAlignment.center,
+//                       children: [
+//                         InkWell(
+//                           onTap: () => Navigator.pop(context),
+//                           borderRadius: BorderRadius.circular(10.0),
+//                           child: Container(
+//                             width: (width - fixPadding * 14.0) / 2,
+//                             padding: EdgeInsets.symmetric(vertical: fixPadding),
+//                             alignment: Alignment.center,
+//                             decoration: BoxDecoration(
+//                               borderRadius: BorderRadius.circular(10.0),
+//                               border: Border.all(
+//                                 width: 1.0,
+//                                 color: primaryColor,
+//                               ),
+//                               color: whiteColor,
+//                             ),
+//                             child: Text(
+//                               'Cancel',
+//                               style: black14MediumTextStyle,
+//                             ),
+//                           ),
+//                         ),
+//                         InkWell(
+//                           onTap: () => Navigator.pushReplacement(
+//                               context,
+//                               new MaterialPageRoute(
+//                                   builder: (BuildContext context) => Login())),
+//                           borderRadius: BorderRadius.circular(10.0),
+//                           child: Container(
+//                             width: (width - fixPadding * 14.0) / 2,
+//                             padding: EdgeInsets.symmetric(vertical: fixPadding),
+//                             alignment: Alignment.center,
+//                             decoration: BoxDecoration(
+//                               borderRadius: BorderRadius.circular(10.0),
+//                               color: primaryColor,
+//                             ),
+//                             child: Text(
+//                               'Logout',
+//                               style: white14MediumTextStyle,
+//                             ),
+//                           ),
+//                         ),
+//                       ],
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//             ],
+//           ),
+//         );
+//       },
+//     );
+//   }
 
 //   @override
 //   Widget build(BuildContext context) {

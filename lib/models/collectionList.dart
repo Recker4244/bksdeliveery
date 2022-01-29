@@ -1,12 +1,11 @@
 class collectionList {
-  String amount;
+  int amount;
   String createdAt;
+  String deleveryAgent;
   String docType;
-  String gold;
   String id;
+  bool instantGoldApplied;
   String mode;
-  int otp;
-  String paymentId;
   String status;
   String updatedAt;
   String user;
@@ -14,12 +13,11 @@ class collectionList {
   collectionList(
       {this.amount,
       this.createdAt,
+      this.deleveryAgent,
       this.docType,
-      this.gold,
       this.id,
+      this.instantGoldApplied,
       this.mode,
-      this.otp,
-      this.paymentId,
       this.status,
       this.updatedAt,
       this.user});
@@ -27,12 +25,11 @@ class collectionList {
   collectionList.fromJson(Map<String, dynamic> json) {
     amount = json['amount'];
     createdAt = json['createdAt'];
+    deleveryAgent = json['deleveryAgent'];
     docType = json['docType'];
-    gold = json['gold'];
     id = json['id'];
+    instantGoldApplied = json['instantGoldApplied'];
     mode = json['mode'];
-    otp = json['otp'];
-    paymentId = json['paymentId'];
     status = json['status'];
     updatedAt = json['updatedAt'];
     user = json['user'];
@@ -42,12 +39,11 @@ class collectionList {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['amount'] = this.amount;
     data['createdAt'] = this.createdAt;
+    data['deleveryAgent'] = this.deleveryAgent;
     data['docType'] = this.docType;
-    data['gold'] = this.gold;
     data['id'] = this.id;
+    data['instantGoldApplied'] = this.instantGoldApplied;
     data['mode'] = this.mode;
-    data['otp'] = this.otp;
-    data['paymentId'] = this.paymentId;
     data['status'] = this.status;
     data['updatedAt'] = this.updatedAt;
     data['user'] = this.user;

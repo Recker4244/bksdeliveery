@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gold247/models/finalDetails.dart';
+import 'package:gold247/pages/portfolio/Collections.dart';
 import 'package:sizer/sizer.dart';
 import 'package:gold247/constant/constant.dart';
 import 'package:gold247/pages/complete_last_step.dart';
@@ -7,6 +8,7 @@ import 'package:gold247/pages/sealing_envelope.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_picker/image_picker.dart';
+import 'Purcahse_entry.dart';
 import 'dart:io';
 import 'dart:convert';
 
@@ -18,6 +20,15 @@ class OneLastStep extends StatefulWidget {
 }
 
 class _OneLastStepState extends State<OneLastStep> {
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      finalappt.meltedWeight = 0;
+      finalappt.finalPurity = 0;
+    });
+  }
+
   Future upload_picture(String path) async {
     showDialog(
       context: context,
@@ -74,6 +85,74 @@ class _OneLastStepState extends State<OneLastStep> {
     }
   }
 
+  void optout() {
+    lastStep() async {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          // return object of type Dialog
+          return Dialog(
+            elevation: 0.0,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0)),
+            child: Wrap(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(20.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      SpinKitRing(
+                        color: primaryColor,
+                        size: 40.0,
+                        lineWidth: 1.2,
+                      ),
+                      SizedBox(height: 25.0),
+                      Text(
+                        'Please Wait..',
+                        style: grey14MediumTextStyle,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+
+      var headers = {'Content-Type': 'application/json'};
+      var request = http.Request(
+          'POST',
+          Uri.parse(
+              'https://goldv2.herokuapp.com/api/final-appointment/create/'));
+      final body = {
+        "AppoitmnetProcessDetailsID": finalappt.appoitmnetProcessDetailsID,
+        "AppointmentID": finalappt.appointmentID,
+        "MeltedWeight": finalappt.meltedWeight,
+        "FinalPurity": finalappt.finalPurity,
+        "PurityPhoto": finalappt.purityPhoto,
+        "Status": "Accepted",
+        "SerialNumber": finalappt.serialNumber,
+        "TotalWeightIncludingEnvelope": finalappt.totalWeightIncludingEnvelope
+      };
+      request.body = json.encode(body);
+      request.headers.addAll(headers);
+
+      http.StreamedResponse response = await request.send();
+
+      if (response.statusCode == 200) {
+        Navigator.of(context).pop();
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => Collections()));
+      } else {
+        print(response.reasonPhrase);
+      }
+    }
+  }
+
   File file;
   Future selectprofilepic(ImageSource source) async {
     final _picker = ImagePicker();
@@ -88,6 +167,99 @@ class _OneLastStepState extends State<OneLastStep> {
 
   @override
   Widget build(BuildContext context) {
+    void _selectOptionBottomSheet() {
+      double width = MediaQuery.of(context).size.width;
+      showModalBottomSheet(
+          context: context,
+          builder: (BuildContext bc) {
+            return Container(
+              color: whiteColor,
+              child: Wrap(
+                children: <Widget>[
+                  Container(
+                    child: Container(
+                      padding: EdgeInsets.all(fixPadding),
+                      child: Column(
+                        children: <Widget>[
+                          Container(
+                            width: width,
+                            padding: EdgeInsets.symmetric(horizontal: 10.0),
+                            child: Text(
+                              'Choose Option',
+                              textAlign: TextAlign.center,
+                              style: black18BoldTextStyle,
+                            ),
+                          ),
+                          heightSpace,
+                          Container(
+                            margin:
+                                EdgeInsets.symmetric(horizontal: fixPadding),
+                            width: width,
+                            height: 1.0,
+                            color: greyColor.withOpacity(0.5),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              selectprofilepic(ImageSource.camera);
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                              width: width,
+                              padding: EdgeInsets.all(10.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Icon(
+                                    Icons.camera_alt,
+                                    color: Colors.black.withOpacity(0.7),
+                                    size: 20.0,
+                                  ),
+                                  SizedBox(
+                                    width: 10.0,
+                                  ),
+                                  Text('Camera', style: black14MediumTextStyle),
+                                ],
+                              ),
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              selectprofilepic(ImageSource.gallery);
+                            },
+                            child: Container(
+                              width: width,
+                              padding: EdgeInsets.all(10.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Icon(
+                                    Icons.photo_album,
+                                    color: Colors.black.withOpacity(0.7),
+                                    size: 20.0,
+                                  ),
+                                  SizedBox(
+                                    width: 10.0,
+                                  ),
+                                  Text(
+                                    'Upload from Gallery',
+                                    style: black14MediumTextStyle,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            );
+          });
+    }
+
     MaterialStateProperty<Color> getColor(Color white, Color pressed) {
       final getColor = (Set<MaterialState> states) {
         if (states.contains(MaterialState.pressed)) {
@@ -145,6 +317,10 @@ class _OneLastStepState extends State<OneLastStep> {
                             ),
                           ),
                           child: TextFormField(
+                            onChanged: (value) {
+                              finalappt.meltedWeight = num.parse(value);
+                              setState(() {});
+                            },
                             cursorColor: primaryColor,
                             autovalidateMode:
                                 AutovalidateMode.onUserInteraction,
@@ -191,6 +367,10 @@ class _OneLastStepState extends State<OneLastStep> {
                             ),
                           ),
                           child: TextFormField(
+                            onChanged: (value) {
+                              finalappt.finalPurity = num.parse(value);
+                              setState(() {});
+                            },
                             cursorColor: primaryColor,
                             autovalidateMode:
                                 AutovalidateMode.onUserInteraction,
@@ -213,7 +393,7 @@ class _OneLastStepState extends State<OneLastStep> {
                                     BorderSide(color: primaryColor, width: 1),
                               ),
                               fillColor: whiteColor,
-                              labelText: "Average Purity",
+                              labelText: "Final Purity",
                               suffix: Text("Fitness",
                                   style: primaryColor18BoldTextStyle),
                               labelStyle: primaryColor16MediumTextStyle,
@@ -249,7 +429,8 @@ class _OneLastStepState extends State<OneLastStep> {
                                 //   ],
                                 // ),
                                 child: FittedBox(
-                                  child: Text('#fhdsoifjdsfisop942vcbfd',
+                                  child: Text(
+                                      '${finalappt.appoitmnetProcessDetailsID}',
                                       style: primaryColor16MediumTextStyle
                                           .copyWith(color: Colors.black)),
                                 ),
@@ -259,13 +440,41 @@ class _OneLastStepState extends State<OneLastStep> {
                           SizedBox(
                             height: 2.h,
                           ),
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          //   children: [
+                          //     Text('Total Gross Weight:',
+                          //         style: primaryColor16MediumTextStyle.copyWith(
+                          //             color: Colors.black)),
+                          //     Text(' GRAM',
+                          //         style: primaryColor16MediumTextStyle.copyWith(
+                          //             color: Colors.black)),
+                          //   ],
+                          // ),
+                          // SizedBox(
+                          //   height: 2.h,
+                          // ),
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          //   children: [
+                          //     Text('Total Net Weight:',
+                          //         style: primaryColor16MediumTextStyle.copyWith(
+                          //             color: Colors.black)),
+                          //     Text('8.6 GRAM',
+                          //         style: primaryColor16MediumTextStyle.copyWith(
+                          //             color: Colors.black)),
+                          //   ],
+                          // ),
+                          SizedBox(
+                            height: 2.h,
+                          ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('Total Gross Weight:',
+                              Text('Final Weight After Melting:',
                                   style: primaryColor16MediumTextStyle.copyWith(
                                       color: Colors.black)),
-                              Text('10 GRAM',
+                              Text(finalappt.meltedWeight.toStringAsFixed(2),
                                   style: primaryColor16MediumTextStyle.copyWith(
                                       color: Colors.black)),
                             ],
@@ -276,24 +485,10 @@ class _OneLastStepState extends State<OneLastStep> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('Total Net Weight:',
+                              Text('Final Purity:',
                                   style: primaryColor16MediumTextStyle.copyWith(
                                       color: Colors.black)),
-                              Text('8.6 GRAM',
-                                  style: primaryColor16MediumTextStyle.copyWith(
-                                      color: Colors.black)),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 2.h,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text('Approx Purity:',
-                                  style: primaryColor16MediumTextStyle.copyWith(
-                                      color: Colors.black)),
-                              Text('24',
+                              Text(finalappt.finalPurity.toStringAsFixed(2),
                                   style: primaryColor16MediumTextStyle.copyWith(
                                       color: Colors.black)),
                             ],
@@ -304,10 +499,11 @@ class _OneLastStepState extends State<OneLastStep> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('Approx Valuation:',
+                              Text('Final Valuation:',
                                   style: primaryColor16MediumTextStyle.copyWith(
                                       color: Colors.black)),
-                              Text('INR 3,73,000',
+                              Text(
+                                  '${(finalappt.meltedWeight * finalappt.finalPurity * 0.01 * metalprice * totaldetailamount).toStringAsFixed(2)} INR',
                                   style: primaryColor16MediumTextStyle),
                             ],
                           ),
@@ -337,10 +533,7 @@ class _OneLastStepState extends State<OneLastStep> {
                                   backgroundColor:
                                       getColor(primaryColor, whiteColor)),
                               onPressed: () async {
-                                // Navigator.push(
-                                //     context,
-                                //     MaterialPageRoute(
-                                //         builder: (context) => CheckBeforeProceeding()));
+                                _selectOptionBottomSheet();
                               }),
                           SizedBox(
                             height: 4.h,
@@ -377,7 +570,16 @@ class _OneLastStepState extends State<OneLastStep> {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                CompleteLastStep()));
+                                                CompleteLastStep(
+                                                  valuation:
+                                                      (finalappt.meltedWeight *
+                                                              finalappt
+                                                                  .finalPurity *
+                                                              0.01 *
+                                                              metalprice *
+                                                              totaldetailamount)
+                                                          .toStringAsFixed(2),
+                                                )));
                                   }),
                               ElevatedButton(
                                   child: Text(
@@ -404,11 +606,7 @@ class _OneLastStepState extends State<OneLastStep> {
                                       backgroundColor:
                                           getColor(primaryColor, whiteColor)),
                                   onPressed: () async {
-                                    // Navigator.push(
-                                    //     context,
-                                    //     MaterialPageRoute(
-                                    //         builder: (context) =>
-                                    //             OneLastStep()));
+                                    optout();
                                   }),
                             ],
                           )

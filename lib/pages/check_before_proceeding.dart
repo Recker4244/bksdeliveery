@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:gold247/models/finalDetails.dart';
+import 'package:gold247/pages/portfolio/Collections.dart';
 import 'package:sizer/sizer.dart';
 import 'package:gold247/constant/constant.dart';
 import 'package:gold247/pages/lastStep.dart';
 import 'package:gold247/pages/sealing_envelope.dart';
 import 'Purcahse_entry.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class CheckBeforeProceeding extends StatefulWidget {
   final String appointmentId;
@@ -139,7 +142,7 @@ class _CheckBeforeProceedingState extends State<CheckBeforeProceeding> {
                           style: primaryColor16MediumTextStyle.copyWith(
                               color: Colors.black)),
                       Text(
-                          '${num.parse(widget.net) * num.parse(widget.purity) * 0.01 * metalprice + totaldetailamount}',
+                          '${num.parse(widget.net) * num.parse(widget.purity) * 0.01 * metalprice + totaldetailamount} INR',
                           style: primaryColor16MediumTextStyle),
                     ],
                   ),
@@ -227,10 +230,26 @@ class _CheckBeforeProceedingState extends State<CheckBeforeProceeding> {
                           foregroundColor: getColor(whiteColor, primaryColor),
                           backgroundColor: getColor(primaryColor, whiteColor)),
                       onPressed: () async {
-                        // Navigator.push(
-                        //     context,
-                        //     MaterialPageRoute(
-                        //         builder: (context) => OneLastStep()));
+                        var headers = {'Content-Type': 'application/json'};
+                        var request = http.Request(
+                            'PUT',
+                            Uri.parse(
+                                'http://13.59.57.74:5000/api/appointment/status/${finalappt.appointmentID}'));
+                        request.body = json.encode({
+                          "status": "Cancelled",
+                        });
+                        request.headers.addAll(headers);
+
+                        http.StreamedResponse response = await request.send();
+
+                        if (response.statusCode == 200) {
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Collections()));
+                        } else {
+                          print(response.reasonPhrase);
+                        }
                       }),
                 ],
               )

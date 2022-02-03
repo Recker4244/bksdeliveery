@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:gold247/models/finalDetails.dart';
+import 'package:gold247/pages/portfolio/Collections.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:sizer/sizer.dart';
 import 'package:gold247/constant/constant.dart';
 import 'package:gold247/pages/sealing_envelope.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class CompleteLastStep extends StatefulWidget {
-  const CompleteLastStep({Key key}) : super(key: key);
+  final String valuation;
+  const CompleteLastStep({Key key, this.valuation}) : super(key: key);
 
   @override
   _CompleteLastStepState createState() => _CompleteLastStepState();
@@ -15,6 +18,42 @@ class CompleteLastStep extends StatefulWidget {
 
 class _CompleteLastStepState extends State<CompleteLastStep> {
   lastStep() async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return Dialog(
+          elevation: 0.0,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          child: Wrap(
+            children: [
+              Container(
+                padding: EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    SpinKitRing(
+                      color: primaryColor,
+                      size: 40.0,
+                      lineWidth: 1.2,
+                    ),
+                    SizedBox(height: 25.0),
+                    Text(
+                      'Please Wait..',
+                      style: grey14MediumTextStyle,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
     var headers = {'Content-Type': 'application/json'};
     var request = http.Request(
         'POST',
@@ -36,9 +75,12 @@ class _CompleteLastStepState extends State<CompleteLastStep> {
     http.StreamedResponse response = await request.send();
 
     if (response.statusCode == 200) {
-      print(await response.stream.bytesToString());
+      Navigator.of(context).pop();
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => Collections()));
     } else {
       print(response.reasonPhrase);
+      Navigator.of(context).pop();
     }
   }
 
@@ -102,7 +144,8 @@ class _CompleteLastStepState extends State<CompleteLastStep> {
                                 //   ],
                                 // ),
                                 child: FittedBox(
-                                  child: Text('#fhdsoifjdsfisop942vcbfd',
+                                  child: Text(
+                                      '${finalappt.appoitmnetProcessDetailsID}',
                                       style: primaryColor16MediumTextStyle
                                           .copyWith(color: Colors.black)),
                                 ),
@@ -118,7 +161,8 @@ class _CompleteLastStepState extends State<CompleteLastStep> {
                               Text('Final Weight After Melting:',
                                   style: primaryColor16MediumTextStyle.copyWith(
                                       color: Colors.black)),
-                              Text('8.6 GRAM',
+                              Text(
+                                  '${finalappt.meltedWeight.toStringAsFixed(2)} GRAM',
                                   style: primaryColor16MediumTextStyle.copyWith(
                                       color: Colors.black)),
                             ],
@@ -132,7 +176,8 @@ class _CompleteLastStepState extends State<CompleteLastStep> {
                               Text('Final Purity:',
                                   style: primaryColor16MediumTextStyle.copyWith(
                                       color: Colors.black)),
-                              Text('24',
+                              Text(
+                                  '${finalappt.finalPurity.toStringAsFixed(2)}',
                                   style: primaryColor16MediumTextStyle.copyWith(
                                       color: Colors.black)),
                             ],
@@ -146,7 +191,7 @@ class _CompleteLastStepState extends State<CompleteLastStep> {
                               Text('Final Valuation:',
                                   style: primaryColor16MediumTextStyle.copyWith(
                                       color: Colors.black)),
-                              Text('INR 3,73,000',
+                              Text('INR ${widget.valuation}',
                                   style: primaryColor16MediumTextStyle),
                             ],
                           ),
@@ -173,10 +218,13 @@ class _CompleteLastStepState extends State<CompleteLastStep> {
                                 ),
                               ),
                               child: TextFormField(
+                                onChanged: (value) {
+                                  finalappt.serialNumber = value;
+                                },
                                 cursorColor: primaryColor,
                                 autovalidateMode:
                                     AutovalidateMode.onUserInteraction,
-                                keyboardType: TextInputType.number,
+                                //keyboardType: TextInputType.number,
                                 style: primaryColor18BoldTextStyle,
                                 decoration: InputDecoration(
                                   focusedBorder: OutlineInputBorder(
@@ -219,6 +267,10 @@ class _CompleteLastStepState extends State<CompleteLastStep> {
                                 ),
                               ),
                               child: TextFormField(
+                                onChanged: (value) {
+                                  finalappt.totalWeightIncludingEnvelope =
+                                      num.parse(value);
+                                },
                                 cursorColor: primaryColor,
                                 autovalidateMode:
                                     AutovalidateMode.onUserInteraction,
@@ -285,6 +337,7 @@ class _CompleteLastStepState extends State<CompleteLastStep> {
                                   backgroundColor:
                                       getColor(primaryColor, whiteColor)),
                               onPressed: () async {
+                                await lastStep();
                                 // Navigator.push(
                                 //     context,
                                 //     MaterialPageRoute(

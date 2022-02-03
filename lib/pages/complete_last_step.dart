@@ -7,6 +7,7 @@ import 'package:sizer/sizer.dart';
 import 'package:gold247/constant/constant.dart';
 import 'package:gold247/pages/sealing_envelope.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:gold247/models/user.dart';
 
 class CompleteLastStep extends StatefulWidget {
   final String valuation;
@@ -58,7 +59,7 @@ class _CompleteLastStepState extends State<CompleteLastStep> {
     var request = http.Request(
         'POST',
         Uri.parse(
-            'https://goldv2.herokuapp.com/api/final-appointment/create/'));
+            'https://goldv2.herokuapp.com/api/final-appointment/create/${Userdata.sId}'));
     final body = {
       "AppoitmnetProcessDetailsID": finalappt.appoitmnetProcessDetailsID,
       "AppointmentID": finalappt.appointmentID,

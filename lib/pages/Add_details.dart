@@ -77,7 +77,7 @@ class _AddDetailsState extends State<AddDetails> {
       "Details": [
         for (int i = 0; i < details.length; i++)
           {
-            "_id": false,
+            //"id": "61f63083d15f7d56116505e1",
             "styleID": details[i].styleID,
             "unitOfMeasurement": details[i].unitOfMeasurement,
             "units": details[i].units,
@@ -92,9 +92,10 @@ class _AddDetailsState extends State<AddDetails> {
     http.StreamedResponse response = await request.send();
 
     if (response.statusCode == 200) {
+      final responseString = await response.stream.bytesToString();
+      Map det = jsonDecode(responseString);
       Navigator.of(context).pop();
-      Navigator.of(context).pop();
-      print(await response.stream.bytesToString());
+      Navigator.pop(context, det['data']['id']);
     } else {
       print(response.reasonPhrase);
       Navigator.of(context).pop();
@@ -494,6 +495,7 @@ class _AddDetailsCardState extends State<AddDetailsCard> {
                           .toStringAsFixed(2);
                     });
                     Detail.amount = amount.text;
+                    if (card == details.length + 1) details.add(Detail);
                   },
                   cursorColor: primaryColor,
                   autovalidateMode: AutovalidateMode.onUserInteraction,

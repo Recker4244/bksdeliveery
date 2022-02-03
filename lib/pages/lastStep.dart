@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:gold247/models/finalDetails.dart';
 import 'package:sizer/sizer.dart';
 import 'package:gold247/constant/constant.dart';
 import 'package:gold247/pages/complete_last_step.dart';
 import 'package:gold247/pages/sealing_envelope.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'dart:convert';
 
 class OneLastStep extends StatefulWidget {
   const OneLastStep({Key key}) : super(key: key);
@@ -12,6 +18,74 @@ class OneLastStep extends StatefulWidget {
 }
 
 class _OneLastStepState extends State<OneLastStep> {
+  Future upload_picture(String path) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return Dialog(
+          elevation: 0.0,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          child: Wrap(
+            children: [
+              Container(
+                padding: EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    SpinKitRing(
+                      color: primaryColor,
+                      size: 40.0,
+                      lineWidth: 1.2,
+                    ),
+                    SizedBox(height: 25.0),
+                    Text(
+                      'Uploading..',
+                      style: grey14MediumTextStyle,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    var request = http.MultipartRequest(
+        'POST',
+        Uri.parse(
+            'https://goldv2.herokuapp.com/api/final-appointment/uploadPurityPhoto'));
+    request.files.add(await http.MultipartFile.fromPath('PurityPhoto', path));
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      final responseString = await response.stream.bytesToString();
+      Map det = jsonDecode(responseString);
+      finalappt.purityPhoto = det['PurityPhoto'];
+      Navigator.of(context).pop();
+      Navigator.of(context).pop();
+    } else {
+      print(response.reasonPhrase);
+    }
+  }
+
+  File file;
+  Future selectprofilepic(ImageSource source) async {
+    final _picker = ImagePicker();
+    final imageFile = await _picker.pickImage(source: source);
+    if (this.mounted) {
+      setState(() {
+        file = File(imageFile.path);
+      });
+      await upload_picture(file.path);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     MaterialStateProperty<Color> getColor(Color white, Color pressed) {
@@ -237,6 +311,37 @@ class _OneLastStepState extends State<OneLastStep> {
                                   style: primaryColor16MediumTextStyle),
                             ],
                           ),
+                          SizedBox(
+                            height: 4.h,
+                          ),
+                          ElevatedButton(
+                              child: Text(
+                                "Add Purity Photo",
+                                style: TextStyle(
+                                  fontFamily: 'Jost',
+                                  fontSize: 12.0.sp,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                              style: ButtonStyle(
+                                  padding: MaterialStateProperty.all(
+                                      EdgeInsets.symmetric(
+                                          horizontal: 5.w, vertical: 3.h)),
+                                  shape: MaterialStateProperty.all<
+                                          RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  )),
+                                  foregroundColor:
+                                      getColor(whiteColor, primaryColor),
+                                  backgroundColor:
+                                      getColor(primaryColor, whiteColor)),
+                              onPressed: () async {
+                                // Navigator.push(
+                                //     context,
+                                //     MaterialPageRoute(
+                                //         builder: (context) => CheckBeforeProceeding()));
+                              }),
                           SizedBox(
                             height: 4.h,
                           ),

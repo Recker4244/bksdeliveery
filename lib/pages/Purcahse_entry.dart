@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gold247/models/collectionList.dart';
+import 'package:gold247/models/finalDetails.dart';
 import 'package:gold247/models/processDetail.dart';
 import 'package:sizer/sizer.dart';
 import 'package:gold247/constant/constant.dart';
@@ -9,6 +10,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:gold247/models/user.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 List<processdetail> process = [];
 int card = 1;
@@ -23,6 +26,95 @@ class PurchaseEntry extends StatefulWidget {
 }
 
 class _PurchaseEntryState extends State<PurchaseEntry> {
+  Future proceed() async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return Dialog(
+          elevation: 0.0,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          child: Wrap(
+            children: [
+              Container(
+                padding: EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    SpinKitRing(
+                      color: primaryColor,
+                      size: 40.0,
+                      lineWidth: 1.2,
+                    ),
+                    SizedBox(height: 25.0),
+                    Text(
+                      'Please Wait..',
+                      style: grey14MediumTextStyle,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    var headers = {'Content-Type': 'application/json'};
+    var request = http.Request(
+        'POST',
+        Uri.parse(
+            'https://goldv2.herokuapp.com/api/appointment-process/create/${Userdata.sId}'));
+    final body = {
+      "Details": [
+        for (int i = 0; i < process.length; i++)
+          {
+            "ItemName": process[i].itemName,
+            "DetailID": process[i].detailID,
+            "GrossWeight": widget.appointment.weight,
+            "NetWeight": process[i].netWeight,
+            "Purity": process[i].purity,
+            "ItemPhoto": process[i].itemPhoto,
+            "Total": process[i].total
+          }
+      ]
+    };
+    request.body = json.encode(body);
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      Navigator.of(context).pop();
+
+      final responseString = await response.stream.bytesToString();
+      Map det = jsonDecode(responseString);
+      if (true) {
+        num gross = 0;
+        for (int i = 0; i < process.length; i++)
+          gross += process[i].grossWeight;
+        num net = 0;
+        for (int i = 0; i < process.length; i++) net += process[i].netWeight;
+        finalappt.appoitmnetProcessDetailsID = det['data']['id'];
+        finalappt.appointmentID = widget.appointment.id;
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => CheckBeforeProceeding(
+                      appointmentId: det['data']['id'],
+                      gross: gross.toStringAsFixed(2),
+                      net: net.toStringAsFixed(2),
+                    )));
+      }
+    } else {
+      print(response.reasonPhrase);
+      Navigator.of(context).pop();
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -43,77 +135,6 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
       return MaterialStateProperty.resolveWith(getColor);
     }
 
-    Future proceed() async {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          // return object of type Dialog
-          return Dialog(
-            elevation: 0.0,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0)),
-            child: Wrap(
-              children: [
-                Container(
-                  padding: EdgeInsets.all(20.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      SpinKitRing(
-                        color: primaryColor,
-                        size: 40.0,
-                        lineWidth: 1.2,
-                      ),
-                      SizedBox(height: 25.0),
-                      Text(
-                        'Please Wait..',
-                        style: grey14MediumTextStyle,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      );
-
-      var headers = {'Content-Type': 'application/json'};
-      var request = http.Request(
-          'POST',
-          Uri.parse(
-              'https://goldv2.herokuapp.com/api/appointment-process/create/${Userdata.sId}'));
-      final body = {
-        "Details": [
-          for (int i = 0; i < process.length; i++)
-            {
-              "DetailID": "61f859f29871b9001636fdb7",
-              "GrossWeight": process[i].grossWeight,
-              "NetWeight": process[i].netWeight,
-              "ItemPhoto":
-                  "Fbksarafjewellers_260605054_4525615310885611_739919899372511286_n.jpeg",
-              "PurityPhoto":
-                  "Fbksarafjewellers_260605054_4525615310885611_739919899372511286_n.jpeg"
-            }
-        ]
-      };
-      request.body = json.encode(body);
-      request.headers.addAll(headers);
-
-      http.StreamedResponse response = await request.send();
-
-      if (response.statusCode == 200) {
-        Navigator.of(context).pop();
-        Navigator.of(context).pop();
-        print(await response.stream.bytesToString());
-      } else {
-        print(response.reasonPhrase);
-        Navigator.of(context).pop();
-      }
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: Text("Purchase Entry"),
@@ -131,7 +152,9 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
             child: Column(
               children: [
                 for (int cardno = 0; cardno < card; cardno++)
-                  PurchaseEntryCard(),
+                  PurchaseEntryCard(
+                    gross: widget.appointment.weight,
+                  ),
                 ElevatedButton(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
@@ -191,22 +214,11 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
                         foregroundColor: getColor(whiteColor, primaryColor),
                         backgroundColor: getColor(primaryColor, whiteColor)),
                     onPressed: () async {
-                      if (true) {
-                        num gross = 0;
-                        for (int i = 0; i < process.length; i++)
-                          gross += num.parse(process[i].grossWeight);
-                        num net = 0;
-                        for (int i = 0; i < process.length; i++)
-                          net += num.parse(process[i].netWeight);
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => CheckBeforeProceeding(
-                                      appointmentId: widget.appointment.id,
-                                      gross: gross.toStringAsFixed(2),
-                                      net: net.toStringAsFixed(2),
-                                    )));
-                      }
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => CheckBeforeProceeding()));
+                      // await proceed();
                     }),
                 SizedBox(
                   height: 2.h,
@@ -221,7 +233,9 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
 }
 
 class PurchaseEntryCard extends StatefulWidget {
+  final num gross;
   const PurchaseEntryCard({
+    this.gross,
     Key key,
   }) : super(key: key);
 
@@ -233,6 +247,7 @@ class _PurchaseEntryCardState extends State<PurchaseEntryCard> {
   processdetail processDetail = processdetail();
 
   TextEditingController gross = TextEditingController();
+  TextEditingController name = TextEditingController();
 
   TextEditingController net = TextEditingController();
 
@@ -241,9 +256,207 @@ class _PurchaseEntryCardState extends State<PurchaseEntryCard> {
   TextEditingController price = TextEditingController();
 
   TextEditingController amount = TextEditingController();
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setState(() {
+      gross.text = widget.gross.toStringAsFixed(2);
+    });
+  }
+
+//calculate netweight
+  Future getdetailsbyid(String id) async {
+    var request = http.Request('GET',
+        Uri.parse('https://goldv2.herokuapp.com/api/system-details/${id}'));
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      final responseString = await response.stream.bytesToString();
+      Map det = jsonDecode(responseString);
+      num netweight = 0;
+      for (int i = 0; i < det['data']['Details'].length; i++) {
+        netweight += num.parse(det['data']['Details'][i]['units']);
+      }
+      num amount = 0;
+      for (int i = 0; i < det['data']['Details'].length; i++) {
+        amount += num.parse(det['data']['Details'][i]['Amount']);
+      }
+      setState(() {
+        net.text = (num.parse(gross.text) - netweight).toStringAsFixed(2);
+      });
+      processDetail.netWeight = (num.parse(gross.text) - netweight);
+      processDetail.total = amount;
+      return amount;
+    } else {
+      print(response.reasonPhrase);
+    }
+  }
+
+  Future upload_picture(String path) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return Dialog(
+          elevation: 0.0,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          child: Wrap(
+            children: [
+              Container(
+                padding: EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    SpinKitRing(
+                      color: primaryColor,
+                      size: 40.0,
+                      lineWidth: 1.2,
+                    ),
+                    SizedBox(height: 25.0),
+                    Text(
+                      'Uploading..',
+                      style: grey14MediumTextStyle,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    var request = http.MultipartRequest(
+        'POST',
+        Uri.parse(
+            'https://goldv2.herokuapp.com/api/final-appointment/uploadPurityPhoto'));
+    request.files.add(await http.MultipartFile.fromPath('PurityPhoto', path));
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      final responseString = await response.stream.bytesToString();
+      Map det = jsonDecode(responseString);
+      processDetail.itemPhoto = det['PurityPhoto'];
+      Navigator.of(context).pop();
+      Navigator.of(context).pop();
+    } else {
+      print(response.reasonPhrase);
+    }
+  }
+
+  File file;
+  Future selectprofilepic(ImageSource source) async {
+    final _picker = ImagePicker();
+    final imageFile = await _picker.pickImage(source: source);
+    if (this.mounted) {
+      setState(() {
+        file = File(imageFile.path);
+      });
+      await upload_picture(file.path);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    void _selectOptionBottomSheet() {
+      double width = MediaQuery.of(context).size.width;
+      showModalBottomSheet(
+          context: context,
+          builder: (BuildContext bc) {
+            return Container(
+              color: whiteColor,
+              child: Wrap(
+                children: <Widget>[
+                  Container(
+                    child: Container(
+                      padding: EdgeInsets.all(fixPadding),
+                      child: Column(
+                        children: <Widget>[
+                          Container(
+                            width: width,
+                            padding: EdgeInsets.symmetric(horizontal: 10.0),
+                            child: Text(
+                              'Choose Option',
+                              textAlign: TextAlign.center,
+                              style: black18BoldTextStyle,
+                            ),
+                          ),
+                          heightSpace,
+                          Container(
+                            margin:
+                                EdgeInsets.symmetric(horizontal: fixPadding),
+                            width: width,
+                            height: 1.0,
+                            color: greyColor.withOpacity(0.5),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              selectprofilepic(ImageSource.camera);
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                              width: width,
+                              padding: EdgeInsets.all(10.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Icon(
+                                    Icons.camera_alt,
+                                    color: Colors.black.withOpacity(0.7),
+                                    size: 20.0,
+                                  ),
+                                  SizedBox(
+                                    width: 10.0,
+                                  ),
+                                  Text('Camera', style: black14MediumTextStyle),
+                                ],
+                              ),
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              selectprofilepic(ImageSource.gallery);
+                            },
+                            child: Container(
+                              width: width,
+                              padding: EdgeInsets.all(10.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Icon(
+                                    Icons.photo_album,
+                                    color: Colors.black.withOpacity(0.7),
+                                    size: 20.0,
+                                  ),
+                                  SizedBox(
+                                    width: 10.0,
+                                  ),
+                                  Text(
+                                    'Upload from Gallery',
+                                    style: black14MediumTextStyle,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            );
+          });
+    }
+
     MaterialStateProperty<Color> getColor(Color white, Color pressed) {
       final getColor = (Set<MaterialState> states) {
         if (states.contains(MaterialState.pressed)) {
@@ -273,6 +486,12 @@ class _PurchaseEntryCardState extends State<PurchaseEntryCard> {
                       ),
                     ),
                     child: TextFormField(
+                      controller: name,
+                      onChanged: (value) {
+                        setState(() {
+                          processDetail.itemName = value;
+                        });
+                      },
                       cursorColor: primaryColor,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       //keyboardType: TextInputType.number,
@@ -322,8 +541,14 @@ class _PurchaseEntryCardState extends State<PurchaseEntryCard> {
                       foregroundColor: getColor(whiteColor, primaryColor),
                       backgroundColor: getColor(primaryColor, whiteColor)),
                   onPressed: () async {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => AddDetails()));
+                    Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AddDetails()))
+                        .then((value) async {
+                      processDetail.detailID = value;
+                      await getdetailsbyid(value);
+                    });
                   }),
             ],
           ),
@@ -354,9 +579,7 @@ class _PurchaseEntryCardState extends State<PurchaseEntryCard> {
                         return "This field is required";
                       return null;
                     },
-                    onChanged: (value) {
-                      processDetail.grossWeight = gross.text;
-                    },
+                    onChanged: (value) {},
                     controller: gross,
                     cursorColor: primaryColor,
                     autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -404,9 +627,7 @@ class _PurchaseEntryCardState extends State<PurchaseEntryCard> {
                       return null;
                     },
                     controller: net,
-                    onChanged: (value) {
-                      processDetail.netWeight = net.text;
-                    },
+                    onChanged: (value) {},
                     cursorColor: primaryColor,
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     keyboardType: TextInputType.number,
@@ -539,15 +760,27 @@ class _PurchaseEntryCardState extends State<PurchaseEntryCard> {
                     ),
                   ),
                   child: TextFormField(
-                    onChanged: (value) {
+                    onChanged: (value) async {
+                      num totalamount =
+                          await getdetailsbyid(processDetail.detailID);
                       num totalprice = num.parse(net.text) *
-                          num.parse(purity.text) *
-                          0.01 *
-                          num.parse(price.text);
-
+                              num.parse(purity.text) *
+                              0.01 *
+                              num.parse(price.text) +
+                          totalamount;
+                      processDetail.total = totalprice;
                       amount.text = totalprice.toStringAsFixed(2);
-                      if (card == process.length + 1) {
+                      if (card == process.length + 1 &&
+                          !process.contains(processDetail)) {
                         process.add(processDetail);
+                      } else if (card == process.length &&
+                          process.contains(processDetail)) {
+                        int index = process.indexWhere((element) {
+                          if (element.detailID == processDetail.detailID)
+                            return true;
+                          return false;
+                        });
+                        process[index] = processDetail;
                       }
                     },
                     onFieldSubmitted: (value) {},
@@ -691,36 +924,7 @@ class _PurchaseEntryCardState extends State<PurchaseEntryCard> {
                           foregroundColor: getColor(whiteColor, primaryColor),
                           backgroundColor: getColor(primaryColor, whiteColor)),
                       onPressed: () async {
-                        // Navigator.push(
-                        //     context,
-                        //     MaterialPageRoute(
-                        //         builder: (context) => CheckBeforeProceeding()));
-                      }),
-                  ElevatedButton(
-                      child: Text(
-                        "Add Purity Photo",
-                        style: TextStyle(
-                          fontFamily: 'Jost',
-                          fontSize: 12.0.sp,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                      style: ButtonStyle(
-                          padding: MaterialStateProperty.all(
-                              EdgeInsets.symmetric(
-                                  horizontal: 5.w, vertical: 3.h)),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          )),
-                          foregroundColor: getColor(whiteColor, primaryColor),
-                          backgroundColor: getColor(primaryColor, whiteColor)),
-                      onPressed: () async {
-                        // Navigator.push(
-                        //     context,
-                        //     MaterialPageRoute(
-                        //         builder: (context) => CheckBeforeProceeding()));
+                        _selectOptionBottomSheet();
                       }),
                 ],
               ),

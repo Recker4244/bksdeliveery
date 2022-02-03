@@ -12,8 +12,8 @@ class collectionList {
   String updatedAt;
   User user;
   String verifier;
-  int weight;
-  int valuation;
+  num weight;
+  num valuation;
 
   collectionList(
       {this.appointmentDate,

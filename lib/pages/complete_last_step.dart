@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gold247/models/finalDetails.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:sizer/sizer.dart';
@@ -19,14 +20,17 @@ class _CompleteLastStepState extends State<CompleteLastStep> {
         'POST',
         Uri.parse(
             'https://goldv2.herokuapp.com/api/final-appointment/create/'));
-    request.body = json.encode({
-      "AppoitmnetProcessDetailsID": "61f85ba99871b9001636fdba",
-      "MeltedWeight": 714,
-      "FinalPurity": 302,
-      "Status": "Nevada",
-      "SerialNumber": "turquoise",
-      "TotalWeightIncludingEnvelope": 453
-    });
+    final body = {
+      "AppoitmnetProcessDetailsID": finalappt.appoitmnetProcessDetailsID,
+      "AppointmentID": finalappt.appointmentID,
+      "MeltedWeight": finalappt.meltedWeight,
+      "FinalPurity": finalappt.finalPurity,
+      "PurityPhoto": finalappt.purityPhoto,
+      "Status": "Accepted",
+      "SerialNumber": finalappt.serialNumber,
+      "TotalWeightIncludingEnvelope": finalappt.totalWeightIncludingEnvelope
+    };
+    request.body = json.encode(body);
     request.headers.addAll(headers);
 
     http.StreamedResponse response = await request.send();

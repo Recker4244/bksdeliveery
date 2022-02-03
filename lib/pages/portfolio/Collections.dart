@@ -238,36 +238,79 @@ class _CollectionsState extends State<Collections> {
                     ),
                   ),
                 ),
-                InkWell(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        PageTransition(
-                            type: PageTransitionType.size,
-                            alignment: Alignment.bottomCenter,
-                            child: Collectiondetails(
-                              installment: processing[index],
-                              userid: processing[index].user.id,
-                            )));
-                  },
-                  borderRadius: BorderRadius.vertical(
-                    bottom: Radius.circular(10.0),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.vertical(
+                      bottom: Radius.circular(10.0),
+                    ),
+                    color: Colors.white,
                   ),
-                  child: Container(
-                    padding: EdgeInsets.all(fixPadding),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.vertical(
-                        bottom: Radius.circular(10.0),
+                  child: Row(
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              PageTransition(
+                                  type: PageTransitionType.size,
+                                  alignment: Alignment.bottomCenter,
+                                  child: Collectiondetails(
+                                    installment: processing[index],
+                                    userid: processing[index].user.id,
+                                  )));
+                        },
+                        borderRadius: BorderRadius.vertical(
+                          bottom: Radius.circular(10.0),
+                        ),
+                        child: Container(
+                          padding: EdgeInsets.all(fixPadding),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.vertical(
+                              bottom: Radius.circular(10.0),
+                            ),
+                            color: Colors.white,
+                          ),
+                          child: Text(
+                            'Verify OTP'.toUpperCase(),
+                            style: primaryColor14MediumTextStyle,
+                          ),
+                        ),
                       ),
-                      color: Colors.white,
-                    ),
-                    child: Text(
-                      'Click for more detail'.toUpperCase(),
-                      style: primaryColor14MediumTextStyle,
-                    ),
+                      Spacer(),
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              PageTransition(
+                                  type: PageTransitionType.size,
+                                  alignment: Alignment.bottomCenter,
+                                  child: Collectiondetails(
+                                    installment: processing[index],
+                                    userid: processing[index].user.id,
+                                  )));
+                        },
+                        borderRadius: BorderRadius.vertical(
+                          bottom: Radius.circular(10.0),
+                        ),
+                        child: Container(
+                          padding: EdgeInsets.all(fixPadding),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.vertical(
+                              bottom: Radius.circular(10.0),
+                            ),
+                            color: Colors.white,
+                          ),
+                          child: Text(
+                            'Call Customer'.toUpperCase(),
+                            style: primaryColor14MediumTextStyle,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
+                )
 
                 // InkWell(
                 //   onTap: () {

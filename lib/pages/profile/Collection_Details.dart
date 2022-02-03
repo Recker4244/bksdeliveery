@@ -64,56 +64,57 @@ class CollectiondetailsState extends State<Collectiondetails> {
   }
 
   TextEditingController otp = TextEditingController();
-  changeStatus(String id, String status) async {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        // return object of type Dialog
-        return Dialog(
-          elevation: 0.0,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-          child: Wrap(
-            children: [
-              Container(
-                padding: EdgeInsets.all(20.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    SpinKitRing(
-                      color: primaryColor,
-                      size: 40.0,
-                      lineWidth: 1.2,
-                    ),
-                    SizedBox(height: 25.0),
-                    Text(
-                      'Please Wait..',
-                      style: grey14MediumTextStyle,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-    var headers = {'Content-Type': 'application/x-www-form-urlencoded'};
-    var request = http.Request('POST',
-        Uri.parse('http://13.59.57.74:5000/api/appointment/status/$id'));
-    request.bodyFields = {'status': 'Order Completed'};
-    request.headers.addAll(headers);
+  // changeStatus(String id, String status) async {
+  //   showDialog(
+  //     context: context,
+  //     barrierDismissible: false,
+  //     builder: (BuildContext context) {
+  //       // return object of type Dialog
+  //       return Dialog(
+  //         elevation: 0.0,
+  //         shape:
+  //             RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+  //         child: Wrap(
+  //           children: [
+  //             Container(
+  //               padding: EdgeInsets.all(20.0),
+  //               child: Column(
+  //                 mainAxisAlignment: MainAxisAlignment.center,
+  //                 crossAxisAlignment: CrossAxisAlignment.center,
+  //                 children: <Widget>[
+  //                   SpinKitRing(
+  //                     color: primaryColor,
+  //                     size: 40.0,
+  //                     lineWidth: 1.2,
+  //                   ),
+  //                   SizedBox(height: 25.0),
+  //                   Text(
+  //                     'Please Wait..',
+  //                     style: grey14MediumTextStyle,
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       );
+  //     },
+  //   );
+  //   var headers = {'Content-Type': 'application/x-www-form-urlencoded'};
+  //   var request = http.Request('POST',
+  //       Uri.parse('http://13.59.57.74:5000/api/appointment/status/$id'));
+  //   request.bodyFields = {'status': 'Order Completed'};
+  //   request.headers.addAll(headers);
 
-    http.StreamedResponse response = await request.send();
+  //   http.StreamedResponse response = await request.send();
 
-    if (response.statusCode == 200) {
-      print(await response.stream.bytesToString());
-    } else {
-      print(response.reasonPhrase);
-    }
-  }
+  //   if (response.statusCode == 200) {
+  //     print(await response.stream.bytesToString());
+  //     changeSub(id)
+  //   } else {
+  //     print(response.reasonPhrase);
+  //   }
+  // }
 
   changeSub(String id) async {
     var headers = {'Content-Type': 'application/json'};
@@ -173,15 +174,15 @@ class CollectiondetailsState extends State<Collectiondetails> {
 
   void verify() {
     if (otp.text == widget.installment.opt) {
-      Navigator.push(
-          context,
-          PageTransition(
-              type: PageTransitionType.size,
-              alignment: Alignment.bottomCenter,
-              child: PurchaseEntry(
-                appointment: widget.installment,
-              )));
-      //changeStatus(widget.installment.id, "Saved");
+      // Navigator.push(
+      //     context,
+      //     PageTransition(
+      //         type: PageTransitionType.size,
+      //         alignment: Alignment.bottomCenter,
+      //         child: PurchaseEntry(
+      //           appointment: widget.installment,
+      //         )));
+      changeSub(widget.installment.id);
     } else {
       showDialog(
           context: context,

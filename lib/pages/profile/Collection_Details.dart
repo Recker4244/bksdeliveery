@@ -7,6 +7,7 @@ import 'package:gold247/models/referral.dart';
 import 'package:gold247/models/subscription.dart';
 import 'package:gold247/language/locale.dart';
 import 'package:gold247/models/user.dart';
+
 import 'package:gold247/pages/portfolio/Collections.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -52,7 +53,7 @@ class CollectiondetailsState extends State<Collectiondetails> {
 
   Order temp;
   Future<bool> initialise() async {
-    temp = await fetchsubscription(widget.userid, widget.installment.id);
+    //temp = await fetchsubscription(widget.userid, widget.installment.id);
     return true;
   }
 
@@ -100,10 +101,8 @@ class CollectiondetailsState extends State<Collectiondetails> {
       },
     );
     var headers = {'Content-Type': 'application/x-www-form-urlencoded'};
-    var request = http.Request(
-        'POST',
-        Uri.parse(
-            'http://13.59.57.74:5000/api/transaction/changeAppoinmentStatus/$id'));
+    var request = http.Request('POST',
+        Uri.parse('http://13.59.57.74:5000/api/appointment/status/$id'));
     request.bodyFields = {'status': 'Order Completed'};
     request.headers.addAll(headers);
 
@@ -173,8 +172,16 @@ class CollectiondetailsState extends State<Collectiondetails> {
   }
 
   void verify() {
-    if (otp.text == temp.otp) {
-      changeStatus(widget.installment.id, "Saved");
+    if (otp.text == widget.installment.opt) {
+      Navigator.push(
+          context,
+          PageTransition(
+              type: PageTransitionType.size,
+              alignment: Alignment.bottomCenter,
+              child: PurchaseEntry(
+                appointment: widget.installment,
+              )));
+      //changeStatus(widget.installment.id, "Saved");
     } else {
       showDialog(
           context: context,
@@ -226,24 +233,24 @@ class CollectiondetailsState extends State<Collectiondetails> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  locale.collectionDetails.toUpperCase(),
-                  style: TextStyle(
-                    color: primaryColor,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
+              // Padding(
+              //   padding: const EdgeInsets.all(8.0),
+              //   child: Text(
+              //     "",
+              //     style: TextStyle(
+              //       color: primaryColor,
+              //       fontSize: 16,
+              //       fontWeight: FontWeight.bold,
+              //     ),
+              //   ),
+              // ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      "Order ID:",
+                      "Appointment ID:",
                       //locale.OrderID,
                       style: TextStyle(
                         color: blackColor,
@@ -254,7 +261,7 @@ class CollectiondetailsState extends State<Collectiondetails> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      "#${temp.id}",
+                      "#${widget.installment.id}",
                       //"#${widget.temp.id}",
                       style: TextStyle(
                         color: blackColor,
@@ -270,7 +277,7 @@ class CollectiondetailsState extends State<Collectiondetails> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      "Order Placed on:",
+                      "Date:",
                       style: TextStyle(
                         color: blackColor,
                         fontSize: 14,
@@ -280,7 +287,33 @@ class CollectiondetailsState extends State<Collectiondetails> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      "${DateTime.parse(temp.createdAt).toString()}",
+                      "${DateTime.parse(widget.installment.appointmentDate).toString()}",
+                      //widget.temp.createdAt(),
+                      style: TextStyle(
+                        color: blackColor,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      "Time:",
+                      style: TextStyle(
+                        color: blackColor,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      "${widget.installment.appointmentTime}",
                       //widget.temp.createdAt(),
                       style: TextStyle(
                         color: blackColor,
@@ -291,6 +324,7 @@ class CollectiondetailsState extends State<Collectiondetails> {
                 ],
               ),
               Wrap(
+                alignment: WrapAlignment.spaceBetween,
                 //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Padding(
@@ -306,7 +340,7 @@ class CollectiondetailsState extends State<Collectiondetails> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      "${temp.user.fname}",
+                      "${widget.installment.user.fname}",
                       //widget.temp.status().toUpperCase(),
                       style: TextStyle(
                         color: blackColor,
@@ -316,13 +350,39 @@ class CollectiondetailsState extends State<Collectiondetails> {
                   ),
                 ],
               ),
+
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //   children: [
+              //     Padding(
+              //       padding: const EdgeInsets.all(8.0),
+              //       child: Text(
+              //         "Consignment Number:",
+              //         style: TextStyle(
+              //           color: blackColor,
+              //           fontSize: 14,
+              //         ),
+              //       ),
+              //     ),
+              //     Padding(
+              //       padding: const EdgeInsets.all(8.0),
+              //       child: Text(
+              //         "${temp.consignment}",
+              //         style: TextStyle(
+              //           color: blackColor,
+              //           fontSize: 14,
+              //         ),
+              //       ),
+              //     ),
+              //   ],
+              // ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      "Consignment Number:",
+                      "Estimated Valuation:",
                       style: TextStyle(
                         color: blackColor,
                         fontSize: 14,
@@ -332,7 +392,7 @@ class CollectiondetailsState extends State<Collectiondetails> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      "${temp.consignment}",
+                      "INR ${widget.installment.valuation}",
                       style: TextStyle(
                         color: blackColor,
                         fontSize: 14,
@@ -341,81 +401,56 @@ class CollectiondetailsState extends State<Collectiondetails> {
                   ),
                 ],
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      "Total Order Amount:",
-                      style: TextStyle(
-                        color: blackColor,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      "INR ${temp.amount}",
-                      style: TextStyle(
-                        color: blackColor,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Wrap(
-                //mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      "Landmark:",
-                      style: TextStyle(
-                        color: blackColor,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      "${temp.address.landMark}",
-                      style: TextStyle(
-                        color: blackColor,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      "Pincode:",
-                      style: TextStyle(
-                        color: blackColor,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      "${temp.address.pin}",
-                      style: TextStyle(
-                        color: blackColor,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              // Wrap(
+              //   //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //   children: [
+              //     Padding(
+              //       padding: const EdgeInsets.all(8.0),
+              //       child: Text(
+              //         "Landmark:",
+              //         style: TextStyle(
+              //           color: blackColor,
+              //           fontSize: 14,
+              //         ),
+              //       ),
+              //     ),
+              //     Padding(
+              //       padding: const EdgeInsets.all(8.0),
+              //       child: Text(
+              //         "${temp.address.landMark}",
+              //         style: TextStyle(
+              //           color: blackColor,
+              //           fontSize: 14,
+              //         ),
+              //       ),
+              //     ),
+              //   ],
+              // ),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //   children: [
+              //     Padding(
+              //       padding: const EdgeInsets.all(8.0),
+              //       child: Text(
+              //         "Pincode:",
+              //         style: TextStyle(
+              //           color: blackColor,
+              //           fontSize: 14,
+              //         ),
+              //       ),
+              //     ),
+              //     Padding(
+              //       padding: const EdgeInsets.all(8.0),
+              //       child: Text(
+              //         "${temp.address.pin}",
+              //         style: TextStyle(
+              //           color: blackColor,
+              //           fontSize: 14,
+              //         ),
+              //       ),
+              //     ),
+              //   ],
+              // ),
             ],
           ),
         ),
@@ -483,7 +518,7 @@ class CollectiondetailsState extends State<Collectiondetails> {
                   titleSpacing: 0.0,
                   elevation: 0.0,
                   title: Text(
-                    "Order Details",
+                    "Appointment Details",
                     style: TextStyle(
                       color: primaryColor,
                       fontSize: 16,
@@ -493,10 +528,8 @@ class CollectiondetailsState extends State<Collectiondetails> {
                 body: ListView(
                   children: [
                     box2(),
-                    (widget.installment.status == "Order Placed" ||
-                            widget.installment.status ==
-                                "Delivery Boy Assigned" ||
-                            widget.installment.status == "Order In Transit")
+                    (widget.installment.status == "Appointment Placed" ||
+                            widget.installment.status == "Verifier Assigned")
                         ? Padding(
                             padding: EdgeInsets.symmetric(horizontal: 15.w),
                             child: Theme(
@@ -537,9 +570,8 @@ class CollectiondetailsState extends State<Collectiondetails> {
                   ],
                 ),
                 bottomNavigationBar: Visibility(
-                  visible: (widget.installment.status == "Order Placed" ||
-                      widget.installment.status == "Delivery Boy Assigned" ||
-                      widget.installment.status == "Order In Transit"),
+                  visible: (widget.installment.status == "Appointment Placed" ||
+                      widget.installment.status == "Verifier Assigned"),
                   child: InkWell(
                     child: Container(
                       height: 8.h,

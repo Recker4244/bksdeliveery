@@ -91,17 +91,17 @@
 //     }
 //   }
 
-//   File file;
-//   Future selectprofilepic(ImageSource source) async {
-//     final _picker = ImagePicker();
-//     final imageFile = await _picker.pickImage(source: source);
-//     if (this.mounted) {
-//       setState(() {
-//         file = File(imageFile.path);
-//       });
-//       upload_picture(file.path);
-//     }
+// File file;
+// Future selectprofilepic(ImageSource source) async {
+//   final _picker = ImagePicker();
+//   final imageFile = await _picker.pickImage(source: source);
+//   if (this.mounted) {
+//     setState(() {
+//       file = File(imageFile.path);
+//     });
+//     upload_picture(file.path);
 //   }
+// }
 
 //   Future updateUserDetail(String name, String email) async {
 //     showDialog(
@@ -392,96 +392,96 @@
 //   }
 
 //   // Bottom Sheet for Select Options (Camera or Gallery) Start Here
-//   void _selectOptionBottomSheet() {
-//     double width = MediaQuery.of(context).size.width;
-//     showModalBottomSheet(
-//         context: context,
-//         builder: (BuildContext bc) {
-//           return Container(
-//             color: whiteColor,
-//             child: Wrap(
-//               children: <Widget>[
-//                 Container(
-//                   child: Container(
-//                     padding: EdgeInsets.all(fixPadding),
-//                     child: Column(
-//                       children: <Widget>[
-//                         Container(
-//                           width: width,
-//                           padding: EdgeInsets.symmetric(horizontal: 10.0),
-//                           child: Text(
-//                             'Choose Option',
-//                             textAlign: TextAlign.center,
-//                             style: black18BoldTextStyle,
-//                           ),
-//                         ),
-//                         heightSpace,
-//                         Container(
-//                           margin: EdgeInsets.symmetric(horizontal: fixPadding),
-//                           width: width,
-//                           height: 1.0,
-//                           color: greyColor.withOpacity(0.5),
-//                         ),
-//                         InkWell(
-//                           onTap: () {
-//                             selectprofilepic(ImageSource.camera);
-//                             Navigator.pop(context);
-//                           },
-//                           child: Container(
-//                             width: width,
-//                             padding: EdgeInsets.all(10.0),
-//                             child: Row(
-//                               mainAxisAlignment: MainAxisAlignment.start,
-//                               crossAxisAlignment: CrossAxisAlignment.center,
-//                               children: <Widget>[
-//                                 Icon(
-//                                   Icons.camera_alt,
-//                                   color: Colors.black.withOpacity(0.7),
-//                                   size: 20.0,
-//                                 ),
-//                                 SizedBox(
-//                                   width: 10.0,
-//                                 ),
-//                                 Text('Camera', style: black14MediumTextStyle),
-//                               ],
-//                             ),
-//                           ),
-//                         ),
-//                         InkWell(
-//                           onTap: () {
-//                             selectprofilepic(ImageSource.gallery);
-//                           },
-//                           child: Container(
-//                             width: width,
-//                             padding: EdgeInsets.all(10.0),
-//                             child: Row(
-//                               mainAxisAlignment: MainAxisAlignment.start,
-//                               crossAxisAlignment: CrossAxisAlignment.center,
-//                               children: <Widget>[
-//                                 Icon(
-//                                   Icons.photo_album,
-//                                   color: Colors.black.withOpacity(0.7),
-//                                   size: 20.0,
-//                                 ),
-//                                 SizedBox(
-//                                   width: 10.0,
-//                                 ),
-//                                 Text(
-//                                   'Upload from Gallery',
-//                                   style: black14MediumTextStyle,
-//                                 ),
-//                               ],
-//                             ),
-//                           ),
-//                         ),
-//                       ],
-//                     ),
-//                   ),
-//                 )
-//               ],
-//             ),
-//           );
-//         });
-//   }
+  // void _selectOptionBottomSheet() {
+  //   double width = MediaQuery.of(context).size.width;
+  //   showModalBottomSheet(
+  //       context: context,
+  //       builder: (BuildContext bc) {
+  //         return Container(
+  //           color: whiteColor,
+  //           child: Wrap(
+  //             children: <Widget>[
+  //               Container(
+  //                 child: Container(
+  //                   padding: EdgeInsets.all(fixPadding),
+  //                   child: Column(
+  //                     children: <Widget>[
+  //                       Container(
+  //                         width: width,
+  //                         padding: EdgeInsets.symmetric(horizontal: 10.0),
+  //                         child: Text(
+  //                           'Choose Option',
+  //                           textAlign: TextAlign.center,
+  //                           style: black18BoldTextStyle,
+  //                         ),
+  //                       ),
+  //                       heightSpace,
+  //                       Container(
+  //                         margin: EdgeInsets.symmetric(horizontal: fixPadding),
+  //                         width: width,
+  //                         height: 1.0,
+  //                         color: greyColor.withOpacity(0.5),
+  //                       ),
+  //                       InkWell(
+  //                         onTap: () {
+  //                           selectprofilepic(ImageSource.camera);
+  //                           Navigator.pop(context);
+  //                         },
+  //                         child: Container(
+  //                           width: width,
+  //                           padding: EdgeInsets.all(10.0),
+  //                           child: Row(
+  //                             mainAxisAlignment: MainAxisAlignment.start,
+  //                             crossAxisAlignment: CrossAxisAlignment.center,
+  //                             children: <Widget>[
+  //                               Icon(
+  //                                 Icons.camera_alt,
+  //                                 color: Colors.black.withOpacity(0.7),
+  //                                 size: 20.0,
+  //                               ),
+  //                               SizedBox(
+  //                                 width: 10.0,
+  //                               ),
+  //                               Text('Camera', style: black14MediumTextStyle),
+  //                             ],
+  //                           ),
+  //                         ),
+  //                       ),
+  //                       InkWell(
+  //                         onTap: () {
+  //                           selectprofilepic(ImageSource.gallery);
+  //                         },
+  //                         child: Container(
+  //                           width: width,
+  //                           padding: EdgeInsets.all(10.0),
+  //                           child: Row(
+  //                             mainAxisAlignment: MainAxisAlignment.start,
+  //                             crossAxisAlignment: CrossAxisAlignment.center,
+  //                             children: <Widget>[
+  //                               Icon(
+  //                                 Icons.photo_album,
+  //                                 color: Colors.black.withOpacity(0.7),
+  //                                 size: 20.0,
+  //                               ),
+  //                               SizedBox(
+  //                                 width: 10.0,
+  //                               ),
+  //                               Text(
+  //                                 'Upload from Gallery',
+  //                                 style: black14MediumTextStyle,
+  //                               ),
+  //                             ],
+  //                           ),
+  //                         ),
+  //                       ),
+  //                     ],
+  //                   ),
+  //                 ),
+  //               )
+  //             ],
+  //           ),
+  //         );
+  //       });
+  //}
 // // Bottom Sheet for Select Options (Camera or Gallery) Ends Here
 // }

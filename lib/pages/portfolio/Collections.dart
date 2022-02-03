@@ -27,8 +27,8 @@ class _CollectionsState extends State<Collections> {
   List<collectionList> complete = [];
   changeStatus(String id) async {
     var headers = {'Content-Type': 'application/json'};
-    var request =
-        http.Request('POST', Uri.parse('${baseurl}/api/order/status/$id'));
+    var request = http.Request(
+        'POST', Uri.parse('${baseurl}/api/appointment/status/$id'));
     request.body = json.encode({"status": "Cancelled"});
     request.headers.addAll(headers);
 
@@ -53,8 +53,7 @@ class _CollectionsState extends State<Collections> {
 
   List<collectionList> collections = [];
   Future getplans() async {
-    var request = http.Request(
-        'GET', Uri.parse('http://13.59.57.74:5000/api/transaction/'));
+    var request = http.Request('GET', Uri.parse('${baseurl}/api/appointment/'));
 
     http.StreamedResponse response = await request.send();
 
@@ -71,19 +70,19 @@ class _CollectionsState extends State<Collections> {
       collections = collect;
 
       collections = collections
-          .where((element) => element.deleveryAgent == Userdata.sId)
+          .where((element) => element.verifier == Userdata.sId)
           .toList();
       processing = collections.where((element) {
-        if (element.status == "Order Placed" ||
-            element.status == "Delivery Boy Assigned" ||
-            element.status == "Order In Transit") return true;
+        if (element.status == "Request Placed" ||
+            element.status == "Verifier Assigned" ||
+            element.status == "Offer Accepted") return true;
         return false;
       }).toList();
       cancelled = collections
-          .where((element) => element.status == "Order Cancelled")
+          .where((element) => element.status == "Offer Declined by User")
           .toList();
       complete = collections
-          .where((element) => element.status == "Order Completed")
+          .where((element) => element.status == "Bank Transfer Done")
           .toList();
 
       return collections;
@@ -94,41 +93,6 @@ class _CollectionsState extends State<Collections> {
   }
 
   Future getsub() async {}
-
-  // Future getplans() async {
-  //   var headers = {'Content-Type': 'application/x-www-form-urlencoded'};
-  //   var request = http.Request(
-  //       'GET', Uri.parse('${baseurl}/api/subscription/user/${Userdata.sId}'));
-  //   request.headers.addAll(headers);
-  //   http.StreamedResponse response = await request.send();
-
-  //   if (response.statusCode == 200) {
-  //     final responseString = await response.stream.bytesToString();
-  //     Map det = jsonDecode(responseString);
-  //     Iterable l = det['data'];
-  //     temp = List<subscription>.from(
-  //         l.map((model) => subscription.fromJson(model)));
-  //     for (int i = 0; i < temp.length; i++) {
-  //       for (int j = 0; j < temp[i].installments.length; j++) {
-  //         if (temp[i].installments[j].mode == "COD") {
-  //           res.add(temp[i].installments[j]);
-  //         }
-  //       }
-  //     }
-  //     processing = res
-  //         .where((element) =>
-  //             element.status == "Plan Initiated" ||
-  //             element.status == "Processing")
-  //         .toList();
-  //     cancelled =
-  //         res.where((element) => element.status == "Cancelled").toList();
-  //     complete = res.where((element) => element.status == "Completed").toList();
-  //   } else {
-  //     print(response.reasonPhrase);
-  //   }
-
-  //   return temp;
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -159,7 +123,7 @@ class _CollectionsState extends State<Collections> {
                 appBar: AppBar(
                   backgroundColor: whiteColor,
                   automaticallyImplyLeading: false,
-                  title: Text('Your Deliveries',
+                  title: Text('Your Appointments',
                       style: primaryColor22BoldTextStyle),
                   bottom: const TabBar(
                     labelColor: Colors.grey,
@@ -258,7 +222,7 @@ class _CollectionsState extends State<Collections> {
                                 ),
                                 height5Space,
                                 Text(
-                                  '${processing[index].amount} INR',
+                                  '${processing[index].opt} INR',
                                   style: black16SemiBoldTextStyle,
                                 ),
                               ],
@@ -274,36 +238,80 @@ class _CollectionsState extends State<Collections> {
                     ),
                   ),
                 ),
-                InkWell(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        PageTransition(
-                            type: PageTransitionType.size,
-                            alignment: Alignment.bottomCenter,
-                            child: Collectiondetails(
-                              installment: processing[index],
-                              userid: processing[index].user,
-                            )));
-                  },
-                  borderRadius: BorderRadius.vertical(
-                    bottom: Radius.circular(10.0),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.vertical(
+                      bottom: Radius.circular(10.0),
+                    ),
+                    color: Colors.white,
                   ),
-                  child: Container(
-                    padding: EdgeInsets.all(fixPadding),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.vertical(
-                        bottom: Radius.circular(10.0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              PageTransition(
+                                  type: PageTransitionType.size,
+                                  alignment: Alignment.bottomCenter,
+                                  child: Collectiondetails(
+                                    installment: processing[index],
+                                    userid: processing[index].user.id,
+                                  )));
+                        },
+                        borderRadius: BorderRadius.vertical(
+                          bottom: Radius.circular(10.0),
+                        ),
+                        child: Container(
+                          padding: EdgeInsets.all(fixPadding),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.vertical(
+                              bottom: Radius.circular(10.0),
+                            ),
+                            color: Colors.white,
+                          ),
+                          child: Text(
+                            'Verify User OTP'.toUpperCase(),
+                            style: primaryColor14MediumTextStyle,
+                          ),
+                        ),
                       ),
-                      color: Colors.white,
-                    ),
-                    child: Text(
-                      'Click for more detail'.toUpperCase(),
-                      style: primaryColor14MediumTextStyle,
-                    ),
+                      Spacer(),
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              PageTransition(
+                                  type: PageTransitionType.size,
+                                  alignment: Alignment.bottomCenter,
+                                  child: Collectiondetails(
+                                    installment: processing[index],
+                                    userid: processing[index].user.id,
+                                  )));
+                        },
+                        borderRadius: BorderRadius.vertical(
+                          bottom: Radius.circular(10.0),
+                        ),
+                        child: Container(
+                          padding: EdgeInsets.all(fixPadding),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.vertical(
+                              bottom: Radius.circular(10.0),
+                            ),
+                            color: Colors.white,
+                          ),
+                          child: Text(
+                            'Call Customer'.toUpperCase(),
+                            style: primaryColor14MediumTextStyle,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
+                )
 
                 // InkWell(
                 //   onTap: () {
@@ -404,7 +412,7 @@ class _CollectionsState extends State<Collections> {
                                 ),
                                 height5Space,
                                 Text(
-                                  '${cancelled[index].amount} INR',
+                                  '${cancelled[index]} INR',
                                   style: black16SemiBoldTextStyle,
                                 ),
                               ],
@@ -429,7 +437,7 @@ class _CollectionsState extends State<Collections> {
                             alignment: Alignment.bottomCenter,
                             child: Collectiondetails(
                               installment: cancelled[index],
-                              userid: cancelled[index].user,
+                              userid: cancelled[index].user.id,
                             )));
                   },
                   borderRadius: BorderRadius.vertical(
@@ -550,7 +558,7 @@ class _CollectionsState extends State<Collections> {
                                 ),
                                 height5Space,
                                 Text(
-                                  '${complete[index].amount} INR',
+                                  '${complete[index]} INR',
                                   style: black16SemiBoldTextStyle,
                                 ),
                               ],
@@ -575,7 +583,7 @@ class _CollectionsState extends State<Collections> {
                             alignment: Alignment.bottomCenter,
                             child: Collectiondetails(
                               installment: complete[index],
-                              userid: complete[index].user,
+                              userid: complete[index].user.id,
                             )));
                   },
                   borderRadius: BorderRadius.vertical(

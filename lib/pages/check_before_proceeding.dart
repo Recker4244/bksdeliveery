@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:gold247/models/finalDetails.dart';
 import 'package:sizer/sizer.dart';
 import 'package:gold247/constant/constant.dart';
 import 'package:gold247/pages/lastStep.dart';
 import 'package:gold247/pages/sealing_envelope.dart';
+import 'Purcahse_entry.dart';
 
 class CheckBeforeProceeding extends StatefulWidget {
   final String appointmentId;
   final String gross;
   final String net;
   final String purity;
+
   const CheckBeforeProceeding(
       {Key key, this.appointmentId, this.gross, this.net, this.purity})
       : super(key: key);
@@ -77,7 +80,7 @@ class _CheckBeforeProceedingState extends State<CheckBeforeProceeding> {
                         //   ],
                         // ),
                         child: FittedBox(
-                          child: Text('${widget.appointmentId}',
+                          child: Text('${finalappt.appoitmnetProcessDetailsID}',
                               style: primaryColor16MediumTextStyle.copyWith(
                                   color: Colors.black)),
                         ),
@@ -135,7 +138,8 @@ class _CheckBeforeProceedingState extends State<CheckBeforeProceeding> {
                       Text('Approx Valuation:',
                           style: primaryColor16MediumTextStyle.copyWith(
                               color: Colors.black)),
-                      Text('INR 3,73,000',
+                      Text(
+                          '${num.parse(widget.net) * num.parse(widget.purity) * 0.01 * metalprice + totaldetailamount}',
                           style: primaryColor16MediumTextStyle),
                     ],
                   ),

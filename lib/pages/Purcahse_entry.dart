@@ -15,6 +15,8 @@ import 'dart:io';
 
 List<processdetail> process = [];
 int card = 1;
+num metalprice = 0;
+num totaldetailamount = 0;
 // final _formkey = GlobalKey<FormState>();
 
 class PurchaseEntry extends StatefulWidget {
@@ -26,6 +28,34 @@ class PurchaseEntry extends StatefulWidget {
 }
 
 class _PurchaseEntryState extends State<PurchaseEntry> {
+  Future getdetailsbyid(String id) async {
+    var request = http.Request('GET',
+        Uri.parse('https://goldv2.herokuapp.com/api/system-details/${id}'));
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      final responseString = await response.stream.bytesToString();
+      Map det = jsonDecode(responseString);
+      num netweight = 0;
+      for (int i = 0; i < det['data']['Details'].length; i++) {
+        netweight += num.parse(det['data']['Details'][i]['units']);
+      }
+      num amount = 0;
+      for (int i = 0; i < det['data']['Details'].length; i++) {
+        amount += num.parse(det['data']['Details'][i]['Amount']);
+      }
+      // setState(() {
+      //   net.text = (num.parse(gross.text) - netweight).toStringAsFixed(2);
+      // });
+      // processDetail.netWeight = (num.parse(gross.text) - netweight);
+      // processDetail.total = amount;
+      return amount;
+    } else {
+      print(response.reasonPhrase);
+    }
+  }
+
   Future proceed() async {
     showDialog(
       context: context,
@@ -95,9 +125,17 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
       if (true) {
         num gross = 0;
         for (int i = 0; i < process.length; i++)
-          gross += process[i].grossWeight;
+          gross += widget.appointment.weight;
         num net = 0;
         for (int i = 0; i < process.length; i++) net += process[i].netWeight;
+
+        num purity = 0;
+        for (int i = 0; i < process.length; i++) purity += process[i].purity;
+        purity /= process.length;
+        num totalamount = 0;
+        for (int i = 0; i < process.length; i++)
+          totalamount += await getdetailsbyid(process[i].detailID);
+        totaldetailamount = totalamount;
         finalappt.appoitmnetProcessDetailsID = det['data']['id'];
         finalappt.appointmentID = widget.appointment.id;
         Navigator.push(
@@ -107,6 +145,7 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
                       appointmentId: det['data']['id'],
                       gross: gross.toStringAsFixed(2),
                       net: net.toStringAsFixed(2),
+                      purity: purity.toStringAsFixed(2),
                     )));
       }
     } else {
@@ -214,11 +253,11 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
                         foregroundColor: getColor(whiteColor, primaryColor),
                         backgroundColor: getColor(primaryColor, whiteColor)),
                     onPressed: () async {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => CheckBeforeProceeding()));
-                      // await proceed();
+                      // Navigator.push(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //         builder: (context) => CheckBeforeProceeding()));
+                      await proceed();
                     }),
                 SizedBox(
                   height: 2.h,
@@ -287,7 +326,7 @@ class _PurchaseEntryCardState extends State<PurchaseEntryCard> {
         net.text = (num.parse(gross.text) - netweight).toStringAsFixed(2);
       });
       processDetail.netWeight = (num.parse(gross.text) - netweight);
-      processDetail.total = amount;
+      // processDetail.total = amount;
       return amount;
     } else {
       print(response.reasonPhrase);
@@ -718,7 +757,7 @@ class _PurchaseEntryCardState extends State<PurchaseEntryCard> {
                       return null;
                     },
                     onChanged: (value) {
-                      // processDetail. = net.text;
+                      processDetail.purity = num.parse(purity.text);
                     },
                     controller: purity,
                     cursorColor: primaryColor,
@@ -761,6 +800,7 @@ class _PurchaseEntryCardState extends State<PurchaseEntryCard> {
                   ),
                   child: TextFormField(
                     onChanged: (value) async {
+                      metalprice = num.parse(value);
                       num totalamount =
                           await getdetailsbyid(processDetail.detailID);
                       num totalprice = num.parse(net.text) *

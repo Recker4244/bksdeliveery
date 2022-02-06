@@ -20,7 +20,7 @@ class Collections extends StatefulWidget {
 }
 
 class _CollectionsState extends State<Collections> {
-  List<subscription> temp;
+  //List<subscription> temp;
   List res = [];
   List<collectionList> processing = [];
   List<collectionList> cancelled = [];
@@ -53,15 +53,16 @@ class _CollectionsState extends State<Collections> {
 
   List<collectionList> collections = [];
   Future getplans() async {
-    var request = http.Request('GET', Uri.parse('${baseurl}/api/appointment/'));
+    var request =
+        http.Request('GET', Uri.parse('${baseurl}/api/order/transactions'));
 
     http.StreamedResponse response = await request.send();
 
     if (response.statusCode == 200) {
       final responseString = await response.stream.bytesToString();
       final det = jsonDecode(responseString);
-      Iterable l = det['data'];
-      List cod = det['data'];
+      Iterable l = det;
+      List cod = det;
       List<collectionList> collect = [];
       for (int i = 0; i < cod.length; i++) {
         collectionList temp = collectionList.fromJson(cod[i]);
@@ -69,20 +70,21 @@ class _CollectionsState extends State<Collections> {
       }
       collections = collect;
 
-      collections = collections
-          .where((element) => element.verifier == Userdata.sId)
-          .toList();
+      collections = collect.where((element) {
+        if (element.transactions.deleveryAgent !=
+            null) if (element.transactions.deleveryAgent == Userdata.sId)
+          return true;
+        return false;
+      }).toList();
       processing = collections.where((element) {
-        if (element.status == "Request Placed" ||
-            element.status == "Verifier Assigned" ||
-            element.status == "Offer Accepted") return true;
+        if (element.status == "Assigned") return true;
         return false;
       }).toList();
       cancelled = collections
-          .where((element) => element.status == "Offer Declined by User")
+          .where((element) => element.status == "Cancelled")
           .toList();
       complete = collections
-          .where((element) => element.status == "Bank Transfer Done")
+          .where((element) => element.status == "Delivered")
           .toList();
 
       return collections;
@@ -123,7 +125,7 @@ class _CollectionsState extends State<Collections> {
                 appBar: AppBar(
                   backgroundColor: whiteColor,
                   automaticallyImplyLeading: false,
-                  title: Text('Your Appointments',
+                  title: Text('Your Deliveries',
                       style: primaryColor22BoldTextStyle),
                   bottom: const TabBar(
                     labelColor: Colors.grey,
@@ -222,7 +224,7 @@ class _CollectionsState extends State<Collections> {
                                 ),
                                 height5Space,
                                 Text(
-                                  '${processing[index].opt} INR',
+                                  '${processing[index].transactions.amount} INR',
                                   style: black16SemiBoldTextStyle,
                                 ),
                               ],
@@ -273,42 +275,42 @@ class _CollectionsState extends State<Collections> {
                             color: Colors.white,
                           ),
                           child: Text(
-                            'Verify User OTP'.toUpperCase(),
+                            'Click for more Details'.toUpperCase(),
                             style: primaryColor14MediumTextStyle,
                           ),
                         ),
                       ),
-                      Spacer(),
-                      InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              PageTransition(
-                                  type: PageTransitionType.size,
-                                  alignment: Alignment.bottomCenter,
-                                  child: Collectiondetails(
-                                    installment: processing[index],
-                                    userid: processing[index].user.id,
-                                  )));
-                        },
-                        borderRadius: BorderRadius.vertical(
-                          bottom: Radius.circular(10.0),
-                        ),
-                        child: Container(
-                          padding: EdgeInsets.all(fixPadding),
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.vertical(
-                              bottom: Radius.circular(10.0),
-                            ),
-                            color: Colors.white,
-                          ),
-                          child: Text(
-                            'Call Customer'.toUpperCase(),
-                            style: primaryColor14MediumTextStyle,
-                          ),
-                        ),
-                      ),
+                      // Spacer(),
+                      // InkWell(
+                      //   onTap: () {
+                      //     Navigator.push(
+                      //         context,
+                      //         PageTransition(
+                      //             type: PageTransitionType.size,
+                      //             alignment: Alignment.bottomCenter,
+                      //             child: Collectiondetails(
+                      //               installment: processing[index],
+                      //               userid: processing[index].user.id,
+                      //             )));
+                      //   },
+                      //   borderRadius: BorderRadius.vertical(
+                      //     bottom: Radius.circular(10.0),
+                      //   ),
+                      //   child: Container(
+                      //     padding: EdgeInsets.all(fixPadding),
+                      //     alignment: Alignment.center,
+                      //     decoration: BoxDecoration(
+                      //       borderRadius: BorderRadius.vertical(
+                      //         bottom: Radius.circular(10.0),
+                      //       ),
+                      //       color: Colors.white,
+                      //     ),
+                      //     child: Text(
+                      //       'Call Customer'.toUpperCase(),
+                      //       style: primaryColor14MediumTextStyle,
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                 )

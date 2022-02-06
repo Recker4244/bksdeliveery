@@ -173,7 +173,7 @@ class CollectiondetailsState extends State<Collectiondetails> {
   }
 
   void verify() {
-    if (otp.text == widget.installment.opt) {
+    if (otp.text == widget.installment.otp) {
       // Navigator.push(
       //     context,
       //     PageTransition(
@@ -251,7 +251,7 @@ class CollectiondetailsState extends State<Collectiondetails> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      "Appointment ID:",
+                      "Order ID:",
                       //locale.OrderID,
                       style: TextStyle(
                         color: blackColor,
@@ -278,7 +278,7 @@ class CollectiondetailsState extends State<Collectiondetails> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      "Date:",
+                      "Order Placed On:",
                       style: TextStyle(
                         color: blackColor,
                         fontSize: 14,
@@ -288,7 +288,7 @@ class CollectiondetailsState extends State<Collectiondetails> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      "${DateTime.parse(widget.installment.appointmentDate).toString()}",
+                      "${DateTime.parse(widget.installment.createdAt).toString()}",
                       //widget.temp.createdAt(),
                       style: TextStyle(
                         color: blackColor,
@@ -304,7 +304,7 @@ class CollectiondetailsState extends State<Collectiondetails> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      "Time:",
+                      "Cutomer Name:",
                       style: TextStyle(
                         color: blackColor,
                         fontSize: 14,
@@ -314,7 +314,7 @@ class CollectiondetailsState extends State<Collectiondetails> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      "${widget.installment.appointmentTime}",
+                      "${widget.installment.user.fname}",
                       //widget.temp.createdAt(),
                       style: TextStyle(
                         color: blackColor,
@@ -331,7 +331,7 @@ class CollectiondetailsState extends State<Collectiondetails> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      "Customer Name:",
+                      "Customer Number:",
                       style: TextStyle(
                         color: blackColor,
                         fontSize: 14,
@@ -341,7 +341,7 @@ class CollectiondetailsState extends State<Collectiondetails> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      "${widget.installment.user.fname}",
+                      "${widget.installment.user.mobile}",
                       //widget.temp.status().toUpperCase(),
                       style: TextStyle(
                         color: blackColor,
@@ -351,7 +351,84 @@ class CollectiondetailsState extends State<Collectiondetails> {
                   ),
                 ],
               ),
-
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      "Consignment Number:",
+                      style: TextStyle(
+                        color: blackColor,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      "${widget.installment.consignment}",
+                      //widget.temp.createdAt(),
+                      style: TextStyle(
+                        color: blackColor,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      "To Pay:",
+                      style: TextStyle(
+                        color: blackColor,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      "${widget.installment.transactions.amount}",
+                      //widget.temp.createdAt(),
+                      style: TextStyle(
+                        color: blackColor,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      "Address:",
+                      style: TextStyle(
+                        color: blackColor,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      "${widget.installment.user.addresses[0].landMark},${widget.installment.user.addresses[0].pin}",
+                      //widget.temp.createdAt(),
+                      style: TextStyle(
+                        color: primaryColor,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               // Row(
               //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
               //   children: [
@@ -393,7 +470,7 @@ class CollectiondetailsState extends State<Collectiondetails> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      "INR ${widget.installment.valuation}",
+                      "INR ${widget.installment.totalCharges}",
                       style: TextStyle(
                         color: blackColor,
                         fontSize: 14,
@@ -519,7 +596,7 @@ class CollectiondetailsState extends State<Collectiondetails> {
                   titleSpacing: 0.0,
                   elevation: 0.0,
                   title: Text(
-                    "Appointment Details",
+                    "Order Details",
                     style: TextStyle(
                       color: primaryColor,
                       fontSize: 16,

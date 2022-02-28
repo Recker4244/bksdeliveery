@@ -297,7 +297,7 @@ class _AddDetailsCardState extends State<AddDetailsCard> {
                       value: styleSelectedValue1,
                       items: styles.map((style v) {
                         return DropdownMenuItem<String>(
-                          value: v.sId,
+                          value: v.name,
                           child:
                               Text(v.name, style: primaryColor18BoldTextStyle),
                         );
@@ -442,6 +442,7 @@ class _AddDetailsCardState extends State<AddDetailsCard> {
                   onChanged: (value) {
                     Detail.units = value;
                   },
+                  initialValue: "1",
                   cursorColor: primaryColor,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   keyboardType: TextInputType.number,
